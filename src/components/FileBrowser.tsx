@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { listS3Objects, getS3FileUrl, deleteS3Object, S3Item } from '@/services/s3Service';
 import { toast } from '@/components/ui/sonner';
@@ -16,7 +15,7 @@ import {
   FileText, 
   FileCode, 
   FileImage, 
-  FilePdf, 
+  FileType,
   FileArchive,
   Music,
   Video,
@@ -166,7 +165,7 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
     if (isImageFile(key)) return <FileImage className="h-6 w-6 text-emerald-500 dark:text-emerald-400" />;
     if (isTextFile(key)) return <FileText className="h-6 w-6 text-blue-500 dark:text-blue-400" />;
     if (isCodeFile(key)) return <FileCode className="h-6 w-6 text-violet-500 dark:text-violet-400" />;
-    if (isPdfFile(key)) return <FilePdf className="h-6 w-6 text-red-500 dark:text-red-400" />;
+    if (isPdfFile(key)) return <FileType className="h-6 w-6 text-red-500 dark:text-red-400" />;
     if (isArchiveFile(key)) return <FileArchive className="h-6 w-6 text-amber-500 dark:text-amber-400" />;
     if (isAudioFile(key)) return <Music className="h-6 w-6 text-pink-500 dark:text-pink-400" />;
     if (isVideoFile(key)) return <Video className="h-6 w-6 text-indigo-500 dark:text-indigo-400" />;
