@@ -1,7 +1,11 @@
 
 import { useState } from 'react';
 import FileUploader from '@/components/FileUploader';
+import FileBrowser from '@/components/FileBrowser';
+import ThemeToggle from '@/components/ThemeToggle';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Image, Upload } from 'lucide-react';
 
 const Index = () => {
   const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
@@ -11,35 +15,67 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">S3 File Uploader</h1>
-          <p className="mt-2 text-lg text-gray-600">
-            Upload your files securely to Amazon S3
-          </p>
+    <div className="min-h-screen bg-background transition-colors duration-300">
+      <header className="border-b py-4 px-6">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+            <Image className="h-6 w-6" />
+            <span>Cloud Gallery</span>
+          </h1>
+          <ThemeToggle />
         </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Upload File</CardTitle>
-            <CardDescription>
-              Drag and drop a file or click to browse
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <FileUploader onUploadComplete={handleUploadComplete} />
-          </CardContent>
-        </Card>
+      </header>
+      
+      <main className="max-w-7xl mx-auto p-4 sm:p-6 space-y-8">
+        <Tabs defaultValue="browse" className="w-full">
+          <TabsList className="grid w-full md:w-[400px] grid-cols-2">
+            <TabsTrigger value="browse" className="flex items-center gap-2">
+              <Image className="h-4 w-4" />
+              <span>Gallery</span>
+            </TabsTrigger>
+            <TabsTrigger value="upload" className="flex items-center gap-2">
+              <Upload className="h-4 w-4" />
+              <span>Upload</span>
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="browse" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Browse Files</CardTitle>
+                <CardDescription>
+                  View and manage your files in the cloud storage
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <FileBrowser />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="upload" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Upload File</CardTitle>
+                <CardDescription>
+                  Drag and drop a file or click to browse
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <FileUploader onUploadComplete={handleUploadComplete} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
         {uploadedFileUrl && (
-          <Card className="mt-6">
+          <Card className="mt-6 bg-muted/50">
             <CardHeader>
               <CardTitle>Upload Successful</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="mb-2 text-sm font-medium">File URL:</p>
-              <div className="bg-gray-50 p-3 rounded-md border overflow-auto">
+              <div className="bg-card p-3 rounded-md border overflow-auto">
                 <a 
                   href={uploadedFileUrl} 
                   target="_blank" 
@@ -52,22 +88,7 @@ const Index = () => {
             </CardContent>
           </Card>
         )}
-
-        <div className="mt-8 bg-blue-50 border-l-4 border-upload-blue p-4 rounded">
-          <h3 className="text-lg font-medium text-blue-800">Setup Instructions</h3>
-          <ul className="mt-2 text-sm text-blue-700 list-disc pl-5">
-            <li className="mb-1">Create a <code>.env.local</code> file in the project root</li>
-            <li className="mb-1">Add the following variables:</li>
-            <code className="block bg-blue-100 p-3 rounded mt-2 overflow-x-auto text-xs">
-              VITE_AWS_ACCESS_KEY_ID=your_access_key_id<br/>
-              VITE_AWS_SECRET_ACCESS_KEY=your_secret_access_key<br/>
-              VITE_AWS_REGION=your_region<br/>
-              VITE_AWS_S3_BUCKET_NAME=your_bucket_name
-            </code>
-            <li className="mt-2">Run <code>npm install</code> then <code>npm start</code></li>
-          </ul>
-        </div>
-      </div>
+      </main>
     </div>
   );
 };
