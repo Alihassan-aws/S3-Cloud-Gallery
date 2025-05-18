@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { listS3Objects, getS3FileUrl, deleteS3Object, S3Item } from '@/services/s3Service';
 import { toast } from '@/components/ui/sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { 
   Folder, 
   Image, 
@@ -201,25 +203,27 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
           className="overflow-hidden hover:border-upload-blue transition-all duration-300 cursor-pointer group hover:shadow-md transform hover:scale-[1.02]"
         >
           <div 
-            className="aspect-square bg-gray-100 dark:bg-gray-800 flex items-center justify-center relative"
+            className="relative"
             onClick={() => handleItemClick(item)}
           >
-            {isImageFile(item.Key) && !item.isFolder ? (
-              <img 
-                src={getS3FileUrl(item.Key)} 
-                alt={getItemName(item.Key)} 
-                className="object-cover w-full h-full transition-opacity duration-300"
-                onError={(e) => {
-                  e.currentTarget.src = '/placeholder.svg';
-                  e.currentTarget.className = "object-contain w-3/4 h-3/4 opacity-60";
-                }}
-                loading="lazy"
-              />
-            ) : (
-              <div className="text-4xl text-gray-400 dark:text-gray-600 transition-transform duration-300 group-hover:scale-110">
-                {getFileIcon(item)}
-              </div>
-            )}
+            <AspectRatio ratio={1/1} className="bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+              {isImageFile(item.Key) && !item.isFolder ? (
+                <img 
+                  src={getS3FileUrl(item.Key)} 
+                  alt={getItemName(item.Key)} 
+                  className="object-contain w-full h-full p-2 transition-opacity duration-300"
+                  onError={(e) => {
+                    e.currentTarget.src = '/placeholder.svg';
+                    e.currentTarget.className = "object-contain w-3/4 h-3/4 opacity-60 p-4";
+                  }}
+                  loading="lazy"
+                />
+              ) : (
+                <div className="text-4xl text-gray-400 dark:text-gray-600 transition-transform duration-300 group-hover:scale-110">
+                  {getFileIcon(item)}
+                </div>
+              )}
+            </AspectRatio>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
