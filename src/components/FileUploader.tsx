@@ -6,12 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 
 // Configure AWS
-AWS.config.update({
-  accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
-  secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
-  region: import.meta.env.VITE_AWS_REGION,
-});
+const configureAWS = () => {
+  AWS.config.update({
+    accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
+    secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
+    region: import.meta.env.VITE_AWS_REGION,
+  });
+};
 
+// Initialize AWS configuration
+configureAWS();
 const s3 = new AWS.S3();
 
 interface FileUploaderProps {
