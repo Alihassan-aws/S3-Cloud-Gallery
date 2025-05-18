@@ -1,73 +1,61 @@
-# Welcome to your Lovable project
 
-## Project info
+# S3 File Uploader
 
-**URL**: https://lovable.dev/projects/c05e1731-bf4d-48fb-a51f-ef6e39dff9f8
+A simple React application for uploading files to Amazon S3 buckets.
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- Drag and drop file uploads
+- Visual upload progress indicator
+- Success/error notifications
+- Responsive design
+- AWS S3 integration
 
-**Use Lovable**
+## Setup
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/c05e1731-bf4d-48fb-a51f-ef6e39dff9f8) and start prompting.
+1. Clone the repository
+2. Create a `.env.local` file in the project root directory with the following variables:
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+VITE_AWS_ACCESS_KEY_ID=your_access_key_id
+VITE_AWS_SECRET_ACCESS_KEY=your_secret_access_key
+VITE_AWS_REGION=your_region
+VITE_AWS_S3_BUCKET_NAME=your_bucket_name
 ```
 
-**Edit a file directly in GitHub**
+3. Install dependencies:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+npm install
+```
 
-**Use GitHub Codespaces**
+4. Start the development server:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```bash
+npm start
+```
 
-## What technologies are used for this project?
+5. Open [http://localhost:8080](http://localhost:8080) to view it in the browser.
 
-This project is built with:
+## AWS S3 Bucket Setup
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Ensure your S3 bucket has the appropriate CORS configuration to allow uploads from your application domain:
 
-## How can I deploy this project?
+```json
+[
+  {
+    "AllowedHeaders": ["*"],
+    "AllowedMethods": ["GET", "PUT", "POST", "DELETE"],
+    "AllowedOrigins": ["http://localhost:8080", "https://your-production-domain.com"],
+    "ExposeHeaders": []
+  }
+]
+```
 
-Simply open [Lovable](https://lovable.dev/projects/c05e1731-bf4d-48fb-a51f-ef6e39dff9f8) and click on Share -> Publish.
+Also make sure your IAM user has sufficient permissions to upload to the specified S3 bucket.
 
-## Can I connect a custom domain to my Lovable project?
+## Security Notes
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- Never commit your `.env.local` file to version control
+- Consider using temporary credentials or pre-signed URLs for production applications
+- For production, implement proper authentication and authorization
