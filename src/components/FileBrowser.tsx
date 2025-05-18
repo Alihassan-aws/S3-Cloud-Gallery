@@ -4,7 +4,25 @@ import { listS3Objects, getS3FileUrl, deleteS3Object, S3Item } from '@/services/
 import { toast } from '@/components/ui/sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Folder, Image, File, MoreVertical, ArrowLeft, Trash2, Eye, Download } from 'lucide-react';
+import { 
+  Folder, 
+  Image, 
+  File, 
+  MoreVertical, 
+  ArrowLeft, 
+  Trash2, 
+  Eye, 
+  Download, 
+  FileText, 
+  FileCode, 
+  FileImage, 
+  FilePdf, 
+  FileArchive,
+  Music,
+  Video,
+  Grid,
+  List 
+} from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import {
   DropdownMenu,
@@ -102,14 +120,58 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
   };
 
   const isImageFile = (key: string) => {
-    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
     const ext = key.split('.').pop()?.toLowerCase() || '';
     return imageExtensions.includes(ext);
   };
 
+  const isTextFile = (key: string) => {
+    const textExtensions = ['txt', 'md', 'log', 'json', 'xml', 'csv'];
+    const ext = key.split('.').pop()?.toLowerCase() || '';
+    return textExtensions.includes(ext);
+  };
+
+  const isCodeFile = (key: string) => {
+    const codeExtensions = ['js', 'ts', 'jsx', 'tsx', 'html', 'css', 'php', 'py', 'java', 'c', 'cpp', 'rb', 'go'];
+    const ext = key.split('.').pop()?.toLowerCase() || '';
+    return codeExtensions.includes(ext);
+  };
+
+  const isPdfFile = (key: string) => {
+    return key.toLowerCase().endsWith('.pdf');
+  };
+
+  const isArchiveFile = (key: string) => {
+    const archiveExtensions = ['zip', 'rar', 'tar', 'gz', '7z'];
+    const ext = key.split('.').pop()?.toLowerCase() || '';
+    return archiveExtensions.includes(ext);
+  };
+
+  const isAudioFile = (key: string) => {
+    const audioExtensions = ['mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac'];
+    const ext = key.split('.').pop()?.toLowerCase() || '';
+    return audioExtensions.includes(ext);
+  };
+
+  const isVideoFile = (key: string) => {
+    const videoExtensions = ['mp4', 'webm', 'mov', 'avi', 'wmv', 'mkv', 'flv'];
+    const ext = key.split('.').pop()?.toLowerCase() || '';
+    return videoExtensions.includes(ext);
+  };
+
   const getFileIcon = (item: S3Item) => {
-    if (item.isFolder) return <Folder className="h-6 w-6" />;
-    return isImageFile(item.Key) ? <Image className="h-6 w-6" /> : <File className="h-6 w-6" />;
+    if (item.isFolder) return <Folder className="h-6 w-6 text-yellow-500 dark:text-yellow-400" />;
+    const key = item.Key;
+    
+    if (isImageFile(key)) return <FileImage className="h-6 w-6 text-emerald-500 dark:text-emerald-400" />;
+    if (isTextFile(key)) return <FileText className="h-6 w-6 text-blue-500 dark:text-blue-400" />;
+    if (isCodeFile(key)) return <FileCode className="h-6 w-6 text-violet-500 dark:text-violet-400" />;
+    if (isPdfFile(key)) return <FilePdf className="h-6 w-6 text-red-500 dark:text-red-400" />;
+    if (isArchiveFile(key)) return <FileArchive className="h-6 w-6 text-amber-500 dark:text-amber-400" />;
+    if (isAudioFile(key)) return <Music className="h-6 w-6 text-pink-500 dark:text-pink-400" />;
+    if (isVideoFile(key)) return <Video className="h-6 w-6 text-indigo-500 dark:text-indigo-400" />;
+    
+    return <File className="h-6 w-6 text-gray-500 dark:text-gray-400" />;
   };
 
   const getItemName = (key: string) => {
@@ -137,7 +199,7 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
       {items.map((item) => (
         <Card 
           key={item.Key} 
-          className="overflow-hidden hover:border-upload-blue transition-colors cursor-pointer group"
+          className="overflow-hidden hover:border-upload-blue transition-all duration-300 cursor-pointer group hover:shadow-md transform hover:scale-[1.02]"
         >
           <div 
             className="aspect-square bg-gray-100 dark:bg-gray-800 flex items-center justify-center relative"
@@ -147,14 +209,15 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
               <img 
                 src={getS3FileUrl(item.Key)} 
                 alt={getItemName(item.Key)} 
-                className="object-cover w-full h-full"
+                className="object-cover w-full h-full transition-opacity duration-300"
                 onError={(e) => {
                   e.currentTarget.src = '/placeholder.svg';
                   e.currentTarget.className = "object-contain w-3/4 h-3/4 opacity-60";
                 }}
+                loading="lazy"
               />
             ) : (
-              <div className="text-4xl text-gray-400 dark:text-gray-600">
+              <div className="text-4xl text-gray-400 dark:text-gray-600 transition-transform duration-300 group-hover:scale-110">
                 {getFileIcon(item)}
               </div>
             )}
@@ -164,7 +227,7 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="absolute top-1 right-1 opacity-0 group-hover:opacity-100"
+                  className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <MoreVertical className="h-4 w-4" />
                 </Button>
@@ -269,7 +332,12 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             {prefixHistory.length > 0 && (
-              <Button variant="outline" size="icon" onClick={navigateBack}>
+              <Button 
+                variant="outline" 
+                size="icon" 
+                onClick={navigateBack}
+                className="transition-transform hover:translate-x-[-2px]"
+              >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             )}
@@ -282,15 +350,17 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
               variant={viewMode === 'grid' ? 'default' : 'outline'} 
               size="icon"
               onClick={() => setViewMode('grid')}
+              className="transition-all duration-200"
             >
-              <Image className="h-4 w-4" />
+              <Grid className="h-4 w-4" />
             </Button>
             <Button 
               variant={viewMode === 'list' ? 'default' : 'outline'} 
               size="icon"
               onClick={() => setViewMode('list')}
+              className="transition-all duration-200"
             >
-              <File className="h-4 w-4" />
+              <List className="h-4 w-4" />
             </Button>
           </div>
         </div>
@@ -306,13 +376,18 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
       ) : items.length === 0 ? (
         <div className="h-64 flex items-center justify-center">
           <div className="text-center text-muted-foreground">
+            <File className="h-12 w-12 mx-auto mb-4 opacity-30" />
             <p>No files found in this folder</p>
           </div>
         </div>
       ) : viewMode === 'grid' ? (
-        renderGridView()
+        <div className="animate-fade-in">
+          {renderGridView()}
+        </div>
       ) : (
-        renderListView()
+        <div className="animate-fade-in">
+          {renderListView()}
+        </div>
       )}
     </div>
   );

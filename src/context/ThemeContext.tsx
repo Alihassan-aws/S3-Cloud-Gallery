@@ -24,7 +24,14 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     // Update the class on the document element when theme changes
     const root = window.document.documentElement;
+    
+    // Add transition classes before changing theme for smooth transition
+    root.classList.add('transition-colors', 'duration-300');
+    
+    // Remove current theme classes
     root.classList.remove('light', 'dark');
+    
+    // Add new theme class
     root.classList.add(theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
