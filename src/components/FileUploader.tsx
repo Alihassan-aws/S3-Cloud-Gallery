@@ -42,8 +42,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete, currentPr
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [uploadComplete, setUploadComplete] = useState<boolean>(false);
   const [multipleFiles, setMultipleFiles] = useState<boolean>(multiple);
-  const [availableFolders, setAvailableFolders] = useState<string[]>(['']);
-  const [selectedFolder, setSelectedFolder] = useState<string>('');
+  const [availableFolders, setAvailableFolders] = useState<string[]>(['root']); // Changed initial empty string to 'root'
+  const [selectedFolder, setSelectedFolder] = useState<string>('root'); // Changed initial value to 'root'
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize multipleFiles state from props
@@ -56,9 +56,16 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete, currentPr
     const loadFolders = async () => {
       try {
         const folders = await listS3Folders();
-        setAvailableFolders(folders);
+        // Make sure we have no empty strings and always have a root option
+        const validFolders = folders.filter(folder => folder !== '');
+        if (!validFolders.includes('root')) {
+          validFolders.unshift('root');
+        }
+        setAvailableFolders(validFolders);
       } catch (err) {
         console.error("Error loading folders:", err);
+        // Ensure we always have a root folder option
+        setAvailableFolders(['root']);
       }
     };
     loadFolders();
@@ -67,7 +74,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete, currentPr
   // Use passed currentPrefix as initial folder selection if available
   useEffect(() => {
     if (currentPrefix) {
-      setSelectedFolder(currentPrefix);
+      // Only set if not empty string
+      setSelectedFolder(currentPrefix || 'root');
     }
   }, [currentPrefix]);
 
@@ -94,8 +102,11 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete, currentPr
       setProgress(0);
       setUploadComplete(false);
 
+      // Convert 'root' folder back to empty string for S3 paths if needed
+      const folderPath = selectedFolder === 'root' ? '' : selectedFolder;
+
       // Use the uploadFilesToS3 function from s3Service
-      const uploadedUrls = await uploadFilesToS3(selectedFiles, selectedFolder, (progress) => {
+      const uploadedUrls = await uploadFilesToS3(selectedFiles, folderPath, (progress) => {
         setProgress(progress);
       });
 
@@ -177,6 +188,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete, currentPr
   };
 
   const getFolderDisplayName = (folderPath: string) => {
+    if (folderPath === 'root') return 'Root';
     if (!folderPath) return 'Root';
     return folderPath.split('/').filter(Boolean).pop() || 'Root';
   };
