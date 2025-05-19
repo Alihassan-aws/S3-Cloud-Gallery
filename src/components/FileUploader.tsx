@@ -315,64 +315,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete, currentPr
       </div>
     </div>
   );
-
-  // Helper function to get folder display name
-  function getFolderDisplayName(folderPath: string) {
-    if (!folderPath) return 'Root';
-    return folderPath.split('/').filter(Boolean).pop() || 'Root';
-  }
-
-  // Helper function to get file icon
-  function getFileIcon() {
-    if (uploadComplete) {
-      return <Check className="w-12 h-12 mb-4 text-green-500 animate-scale-in" />;
-    }
-    if (selectedFiles.length > 0) {
-      return <File className="w-12 h-12 mb-4 text-upload-blue" />;
-    }
-    return <Upload className="w-12 h-12 mb-4 text-gray-400 animate-bounce" />;
-  }
-
-  // Helper function to toggle multiple files mode
-  function toggleMultipleFiles() {
-    setMultipleFiles(!multipleFiles);
-    // Clear selected files when switching modes
-    setSelectedFiles([]);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  }
-
-  // Helper functions for drag and drop
-  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  }
-
-  function handleDragLeave(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  }
-
-  function handleDrop(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const filesArray = Array.from(e.dataTransfer.files);
-      
-      if (!multipleFiles && filesArray.length > 1) {
-        // If multiple mode is off but multiple files are dropped, take only the first one
-        setSelectedFiles([filesArray[0]]);
-      } else {
-        setSelectedFiles(filesArray);
-      }
-      setUploadComplete(false);
-    }
-  }
 };
 
 export default FileUploader;
