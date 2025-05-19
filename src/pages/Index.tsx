@@ -9,9 +9,14 @@ import { Image, Upload, CloudIcon } from 'lucide-react';
 
 const Index = () => {
   const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
+  const [currentPrefix, setCurrentPrefix] = useState<string>('');
 
   const handleUploadComplete = (fileUrl: string) => {
     setUploadedFileUrl(fileUrl);
+  };
+
+  const handlePrefixChange = (prefix: string) => {
+    setCurrentPrefix(prefix);
   };
 
   return (
@@ -54,7 +59,9 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <FileBrowser />
+                <FileBrowser 
+                  onSelect={(url) => console.log('Selected file:', url)} 
+                />
               </CardContent>
             </Card>
           </TabsContent>
@@ -71,7 +78,10 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <FileUploader onUploadComplete={handleUploadComplete} />
+                <FileUploader 
+                  onUploadComplete={handleUploadComplete} 
+                  currentPrefix={currentPrefix}
+                />
               </CardContent>
             </Card>
           </TabsContent>
