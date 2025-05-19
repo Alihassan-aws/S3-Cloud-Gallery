@@ -15,6 +15,11 @@ const Index = () => {
     setUploadedFileUrl(fileUrl);
   };
 
+  const handleFileSelect = (fileUrl: string) => {
+    console.log('Selected file:', fileUrl);
+    // You can use this later if needed
+  };
+
   const handlePrefixChange = (prefix: string) => {
     setCurrentPrefix(prefix);
   };
@@ -60,7 +65,7 @@ const Index = () => {
               </CardHeader>
               <CardContent>
                 <FileBrowser 
-                  onSelect={(url) => console.log('Selected file:', url)} 
+                  onSelect={handleFileSelect} 
                 />
               </CardContent>
             </Card>

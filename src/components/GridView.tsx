@@ -59,16 +59,18 @@ const GridView: React.FC<GridViewProps> = ({ items, onItemClick, onDeleteItem, o
           >
             <AspectRatio ratio={1/1} className="bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
               {isImageFile(item.Key) && !item.isFolder ? (
-                <img 
-                  src={getS3FileUrl(item.Key)} 
-                  alt={getItemName(item.Key)} 
-                  className="object-contain w-full h-full p-2 transition-opacity duration-300"
-                  onError={(e) => {
-                    e.currentTarget.src = '/placeholder.svg';
-                    e.currentTarget.className = "object-contain w-3/4 h-3/4 opacity-60 p-4";
-                  }}
-                  loading="lazy"
-                />
+                <div className="w-full h-full p-2 flex items-center justify-center">
+                  <img 
+                    src={getS3FileUrl(item.Key)} 
+                    alt={getItemName(item.Key)} 
+                    className="max-w-full max-h-full object-contain transition-opacity duration-300"
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder.svg';
+                      e.currentTarget.className = "max-w-full max-h-full object-contain opacity-60";
+                    }}
+                    loading="lazy"
+                  />
+                </div>
               ) : (
                 <div className="text-4xl text-gray-400 dark:text-gray-600 transition-transform duration-300 group-hover:scale-110">
                   <FileIcon fileName={item.Key} isFolder={item.isFolder} className="h-12 w-12" />

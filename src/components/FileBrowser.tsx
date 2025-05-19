@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { listS3Objects, getS3FileUrl, deleteS3Object, S3Item } from '@/services/s3Service';
 import { toast } from '@/components/ui/sonner';
 import { Button } from '@/components/ui/button';
-import { Grid, List, ArrowLeft } from 'lucide-react';
+import { Grid, List, ArrowLeft, RefreshCcw } from 'lucide-react';
 import GridView from './GridView';
 import ListView from './ListView';
 import CreateFolderDialog from './CreateFolderDialog';
@@ -19,15 +19,18 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
   const [currentPrefix, setCurrentPrefix] = useState('');
   const [prefixHistory, setPrefixHistory] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [error, setError] = useState<string | null>(null);
 
   const loadItems = async (prefix: string) => {
     setLoading(true);
+    setError(null);
     try {
       const data = await listS3Objects(prefix);
       console.log("Loaded items:", data);
       setItems(data);
     } catch (error) {
       console.error("Error loading files:", error);
+      setError("Failed to load files. Please check your AWS credentials and permissions.");
       toast.error("Failed to load files");
     } finally {
       setLoading(false);
@@ -49,6 +52,10 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
       setPrefixHistory(prev => prev.slice(0, -1));
       setCurrentPrefix(previousPrefix);
     }
+  };
+
+  const handleRefresh = () => {
+    loadItems(currentPrefix);
   };
 
   const handleItemClick = (item: S3Item) => {
@@ -118,6 +125,14 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
             </h3>
           </div>
           <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleRefresh}
+              className="hover:rotate-180 transition-all duration-500"
+            >
+              <RefreshCcw className="h-4 w-4" />
+            </Button>
             <CreateFolderDialog 
               currentPrefix={currentPrefix} 
               onFolderCreated={handleFolderCreated} 
@@ -149,6 +164,19 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-upload-blue mx-auto mb-4"></div>
             <p className="text-muted-foreground">Loading files...</p>
+          </div>
+        </div>
+      ) : error ? (
+        <div className="h-64 flex items-center justify-center">
+          <div className="text-center text-red-500">
+            <p>{error}</p>
+            <Button 
+              variant="outline" 
+              className="mt-4" 
+              onClick={handleRefresh}
+            >
+              <RefreshCcw className="h-4 w-4 mr-2" /> Try Again
+            </Button>
           </div>
         </div>
       ) : items.length === 0 ? (

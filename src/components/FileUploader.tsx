@@ -1,12 +1,19 @@
-
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import AWS from 'aws-sdk';
 import { toast } from '@/components/ui/sonner';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Upload, File, Check, X } from 'lucide-react';
+import { Upload, File, Check, X, Folder } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { listS3Folders } from '@/services/s3Service';
 
 // Configure AWS
 const configureAWS = () => {
@@ -33,7 +40,22 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete, currentPr
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [uploadComplete, setUploadComplete] = useState<boolean>(false);
   const [multipleFiles, setMultipleFiles] = useState<boolean>(false);
+  const [availableFolders, setAvailableFolders] = useState<string[]>(['']);
+  const [selectedFolder, setSelectedFolder] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load available folders
+  useEffect(() => {
+    const loadFolders = async () => {
+      try {
+        const folders = await listS3Folders();
+        setAvailableFolders(folders);
+      } catch (err) {
+        console.error("Error loading folders:", err);
+      }
+    };
+    loadFolders();
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -63,10 +85,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete, currentPr
       let lastUploadedFileUrl = '';
 
       for (const file of selectedFiles) {
-        const fileName = `${currentPrefix}${Date.now()}-${file.name}`;
+        const uploadPath = selectedFolder + Date.now() + '-' + file.name;
         const params = {
           Bucket: import.meta.env.VITE_AWS_S3_BUCKET_NAME,
-          Key: fileName,
+          Key: uploadPath,
           Body: file,
           ContentType: file.type,
         };
@@ -161,15 +183,45 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete, currentPr
     }
   };
 
+  const getFolderDisplayName = (folderPath: string) => {
+    if (!folderPath) return 'Root';
+    return folderPath.split('/').filter(Boolean).pop() || 'Root';
+  };
+
   return (
     <div className="w-full max-w-xl mx-auto">
-      <div className="flex items-center justify-end space-x-2 mb-4">
-        <Switch 
-          id="multiple-files" 
-          checked={multipleFiles}
-          onCheckedChange={toggleMultipleFiles}
-        />
-        <Label htmlFor="multiple-files">Multiple files</Label>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center space-x-2">
+          <Switch 
+            id="multiple-files" 
+            checked={multipleFiles}
+            onCheckedChange={toggleMultipleFiles}
+          />
+          <Label htmlFor="multiple-files">Multiple files</Label>
+        </div>
+        
+        <div className="w-1/2">
+          <Select value={selectedFolder} onValueChange={setSelectedFolder}>
+            <SelectTrigger className="w-full">
+              <div className="flex items-center">
+                <Folder className="h-4 w-4 mr-2 text-yellow-500" />
+                <SelectValue placeholder="Select folder">
+                  {getFolderDisplayName(selectedFolder)}
+                </SelectValue>
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              {availableFolders.map((folder) => (
+                <SelectItem key={folder} value={folder}>
+                  <div className="flex items-center">
+                    <Folder className="h-4 w-4 mr-2 text-yellow-500" />
+                    {getFolderDisplayName(folder)}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       
       <div 

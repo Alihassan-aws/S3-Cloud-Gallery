@@ -43,7 +43,7 @@ export async function listS3Objects(prefix = ''): Promise<S3Item[]> {
       isFolder: true
     }));
     
-    // Process files
+    // Process files - filter out current folder prefix marker
     const files: S3Item[] = (response.Contents || [])
       .filter(item => item.Key !== prefix) // Filter out the current prefix itself
       .map(item => ({
@@ -57,7 +57,12 @@ export async function listS3Objects(prefix = ''): Promise<S3Item[]> {
     return [...folders, ...files];
   } catch (error) {
     console.error('Error listing S3 objects:', error);
-    throw error;
+    // Show more detailed error
+    if (error instanceof Error) {
+      console.error('Error details:', error.message);
+      toast.error(`Failed to load files: ${error.message}`);
+    }
+    return []; // Return empty array on error instead of throwing
   }
 }
 
@@ -104,3 +109,33 @@ export async function createS3Folder(folderName: string, currentPrefix = ''): Pr
   }
 }
 
+// Add this missing import
+import { toast } from '@/components/ui/sonner';
+
+// Get all available folders for selection during upload
+export async function listS3Folders(): Promise<string[]> {
+  try {
+    const params = {
+      Bucket: import.meta.env.VITE_AWS_S3_BUCKET_NAME,
+      Delimiter: '/'
+    };
+    
+    const response = await s3.listObjectsV2(params).promise();
+    
+    // Extract folder paths from CommonPrefixes
+    const folders: string[] = [''];  // Add root folder as an option
+    
+    if (response.CommonPrefixes && response.CommonPrefixes.length > 0) {
+      response.CommonPrefixes.forEach(prefix => {
+        if (prefix.Prefix) {
+          folders.push(prefix.Prefix);
+        }
+      });
+    }
+    
+    return folders;
+  } catch (error) {
+    console.error('Error listing S3 folders:', error);
+    return [''];  // Return at least the root folder on error
+  }
+}
