@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom"; // Changed from BrowserRouter to HashRouter
 import { ThemeProvider } from "@/context/ThemeContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -26,13 +26,13 @@ const App = () => (
         <div className="min-h-screen transition-colors duration-300">
           <Toaster />
           <Sonner position="top-right" closeButton theme="system" richColors />
-          <BrowserRouter>
+          <HashRouter> {/* Changed from BrowserRouter for better static file support */}
             <Routes>
               <Route path="/" element={<Index />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </BrowserRouter>
+          </HashRouter>
         </div>
       </TooltipProvider>
     </ThemeProvider>
