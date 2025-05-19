@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import AWS from 'aws-sdk';
 import { toast } from '@/components/ui/sonner';
@@ -13,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { listS3Folders } from '@/services/s3Service';
+import { listS3Folders, uploadFilesToS3 } from '@/services/s3Service';
 
 // Configure AWS
 const configureAWS = () => {
@@ -29,20 +30,26 @@ configureAWS();
 const s3 = new AWS.S3();
 
 interface FileUploaderProps {
-  onUploadComplete?: (fileUrl: string) => void;
+  onUploadComplete?: (fileUrl: string | string[]) => void;
   currentPrefix?: string;
+  multiple?: boolean; // Added the multiple property
 }
 
-const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete, currentPrefix = '' }) => {
+const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete, currentPrefix = '', multiple = false }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [progress, setProgress] = useState<number>(0);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [uploadComplete, setUploadComplete] = useState<boolean>(false);
-  const [multipleFiles, setMultipleFiles] = useState<boolean>(false);
+  const [multipleFiles, setMultipleFiles] = useState<boolean>(multiple);
   const [availableFolders, setAvailableFolders] = useState<string[]>(['']);
   const [selectedFolder, setSelectedFolder] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Initialize multipleFiles state from props
+  useEffect(() => {
+    setMultipleFiles(multiple);
+  }, [multiple]);
 
   // Load available folders
   useEffect(() => {
@@ -56,6 +63,13 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete, currentPr
     };
     loadFolders();
   }, []);
+
+  // Use passed currentPrefix as initial folder selection if available
+  useEffect(() => {
+    if (currentPrefix) {
+      setSelectedFolder(currentPrefix);
+    }
+  }, [currentPrefix]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -80,39 +94,18 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete, currentPr
       setProgress(0);
       setUploadComplete(false);
 
-      let uploadedFilesCount = 0;
-      const totalFiles = selectedFiles.length;
-      let lastUploadedFileUrl = '';
-
-      for (const file of selectedFiles) {
-        const uploadPath = selectedFolder + Date.now() + '-' + file.name;
-        const params = {
-          Bucket: import.meta.env.VITE_AWS_S3_BUCKET_NAME,
-          Key: uploadPath,
-          Body: file,
-          ContentType: file.type,
-        };
-
-        const upload = s3.upload(params);
-
-        upload.on('httpUploadProgress', (evt) => {
-          const fileProgress = Math.round((evt.loaded * 100) / evt.total);
-          const overallProgress = Math.round(((uploadedFilesCount * 100) + fileProgress) / totalFiles);
-          setProgress(overallProgress);
-        });
-
-        const data = await upload.promise();
-        lastUploadedFileUrl = data.Location;
-        uploadedFilesCount++;
-      }
+      // Use the uploadFilesToS3 function from s3Service
+      const uploadedUrls = await uploadFilesToS3(selectedFiles, selectedFolder, (progress) => {
+        setProgress(progress);
+      });
 
       setProgress(100);
       setUploadComplete(true);
-      toast.success(`${totalFiles} file${totalFiles > 1 ? 's' : ''} uploaded successfully!`);
+      toast.success(`${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''} uploaded successfully!`);
       
-      // Only call onUploadComplete with the last file's URL
-      if (onUploadComplete && lastUploadedFileUrl) {
-        onUploadComplete(lastUploadedFileUrl);
+      // Call onUploadComplete with the array of URLs
+      if (onUploadComplete) {
+        onUploadComplete(uploadedUrls);
       }
     } catch (err) {
       console.error("Error uploading file:", err);
@@ -322,6 +315,64 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete, currentPr
       </div>
     </div>
   );
+
+  // Helper function to get folder display name
+  function getFolderDisplayName(folderPath: string) {
+    if (!folderPath) return 'Root';
+    return folderPath.split('/').filter(Boolean).pop() || 'Root';
+  }
+
+  // Helper function to get file icon
+  function getFileIcon() {
+    if (uploadComplete) {
+      return <Check className="w-12 h-12 mb-4 text-green-500 animate-scale-in" />;
+    }
+    if (selectedFiles.length > 0) {
+      return <File className="w-12 h-12 mb-4 text-upload-blue" />;
+    }
+    return <Upload className="w-12 h-12 mb-4 text-gray-400 animate-bounce" />;
+  }
+
+  // Helper function to toggle multiple files mode
+  function toggleMultipleFiles() {
+    setMultipleFiles(!multipleFiles);
+    // Clear selected files when switching modes
+    setSelectedFiles([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }
+
+  // Helper functions for drag and drop
+  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }
+
+  function handleDragLeave(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }
+
+  function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const filesArray = Array.from(e.dataTransfer.files);
+      
+      if (!multipleFiles && filesArray.length > 1) {
+        // If multiple mode is off but multiple files are dropped, take only the first one
+        setSelectedFiles([filesArray[0]]);
+      } else {
+        setSelectedFiles(filesArray);
+      }
+      setUploadComplete(false);
+    }
+  }
 };
 
 export default FileUploader;

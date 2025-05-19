@@ -84,62 +84,8 @@ export async function listS3Objects(prefix = ''): Promise<S3Item[]> {
     return [...folders, ...files];
   } catch (error) {
     handleS3Error(error, 'listS3Objects');
-    
-    // Return mock data for development or testing when there are permission issues
-    if (import.meta.env.DEV) {
-      console.log('Using mock data due to S3 access error');
-      return generateMockData(prefix);
-    }
-    
     return []; // Return empty array on error
   }
-}
-
-// Generate mock data for development/testing purposes
-function generateMockData(prefix: string): S3Item[] {
-  const mockItems: S3Item[] = [];
-  
-  // Add a few mock folders if we're in the root
-  if (!prefix) {
-    mockItems.push({ Key: 'images/', isFolder: true });
-    mockItems.push({ Key: 'documents/', isFolder: true });
-    mockItems.push({ Key: 'videos/', isFolder: true });
-  }
-  
-  // Add mock files based on the prefix
-  if (prefix === 'images/') {
-    mockItems.push({
-      Key: 'images/sample1.jpg',
-      Size: 1024 * 1024,
-      LastModified: new Date(),
-      isFolder: false,
-      ContentType: 'jpg'
-    });
-    mockItems.push({
-      Key: 'images/sample2.png',
-      Size: 2 * 1024 * 1024,
-      LastModified: new Date(),
-      isFolder: false,
-      ContentType: 'png'
-    });
-  } else if (prefix === 'documents/') {
-    mockItems.push({
-      Key: 'documents/sample.pdf',
-      Size: 512 * 1024,
-      LastModified: new Date(),
-      isFolder: false,
-      ContentType: 'pdf'
-    });
-    mockItems.push({
-      Key: 'documents/sample.docx',
-      Size: 400 * 1024,
-      LastModified: new Date(),
-      isFolder: false,
-      ContentType: 'docx'
-    });
-  }
-  
-  return mockItems;
 }
 
 export function getS3FileUrl(key: string): string {
@@ -151,15 +97,6 @@ export function getS3FileUrl(key: string): string {
     });
   } catch (error) {
     handleS3Error(error, 'getS3FileUrl');
-    
-    // Return a mock URL for development
-    if (import.meta.env.DEV) {
-      if (key.match(/\.(jpg|jpeg|png|gif)$/i)) {
-        return 'https://via.placeholder.com/300';
-      }
-      return `mock-file-url://${key}`;
-    }
-    
     throw error;
   }
 }
@@ -226,12 +163,6 @@ export async function listS3Folders(): Promise<string[]> {
     return folders;
   } catch (error) {
     handleS3Error(error, 'listS3Folders');
-    
-    // Return mock folders for development
-    if (import.meta.env.DEV) {
-      return ['', 'images/', 'documents/', 'videos/'];
-    }
-    
     return [''];  // Return at least the root folder on error
   }
 }
