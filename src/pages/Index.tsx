@@ -10,14 +10,24 @@ import { Image, Upload, CloudIcon } from 'lucide-react';
 const Index = () => {
   const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
   const [currentPrefix, setCurrentPrefix] = useState<string>('');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const handleUploadComplete = (fileUrl: string) => {
-    setUploadedFileUrl(fileUrl);
+  const handleUploadComplete = (fileUrl: string | string[]) => {
+    // Handle both single and multiple uploaded files
+    if (Array.isArray(fileUrl) && fileUrl.length > 0) {
+      setUploadedFileUrl(fileUrl[0]); // Show first file URL
+      // Trigger refresh of file browser
+      setRefreshTrigger(prev => prev + 1);
+    } else if (typeof fileUrl === 'string') {
+      setUploadedFileUrl(fileUrl);
+      setRefreshTrigger(prev => prev + 1);
+    }
   };
 
   const handleFileSelect = (fileUrl: string) => {
     console.log('Selected file:', fileUrl);
     // You can use this later if needed
+    setUploadedFileUrl(fileUrl);
   };
 
   const handlePrefixChange = (prefix: string) => {
@@ -66,6 +76,7 @@ const Index = () => {
               <CardContent>
                 <FileBrowser 
                   onSelect={handleFileSelect} 
+                  key={`browser-${refreshTrigger}`} // Force refresh when uploads happen
                 />
               </CardContent>
             </Card>
@@ -76,16 +87,17 @@ const Index = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Upload className="h-5 w-5 text-upload-blue" />
-                  Upload File
+                  Upload Files
                 </CardTitle>
                 <CardDescription>
-                  Drag and drop a file or click to browse
+                  Drag and drop files or click to browse
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <FileUploader 
                   onUploadComplete={handleUploadComplete} 
                   currentPrefix={currentPrefix}
+                  multiple={true} // Enable multiple file upload
                 />
               </CardContent>
             </Card>

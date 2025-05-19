@@ -59,7 +59,7 @@ const GridView: React.FC<GridViewProps> = ({ items, onItemClick, onDeleteItem, o
           >
             <AspectRatio ratio={1/1} className="bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
               {isImageFile(item.Key) && !item.isFolder ? (
-                <div className="w-full h-full p-2 flex items-center justify-center">
+                <div className="w-full h-full flex items-center justify-center p-2">
                   <img 
                     src={getS3FileUrl(item.Key)} 
                     alt={getItemName(item.Key)} 

@@ -7,6 +7,7 @@ import { Grid, List, ArrowLeft, RefreshCcw } from 'lucide-react';
 import GridView from './GridView';
 import ListView from './ListView';
 import CreateFolderDialog from './CreateFolderDialog';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface FileBrowserProps {
   onSelect?: (fileUrl: string) => void;
@@ -20,6 +21,7 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
   const [prefixHistory, setPrefixHistory] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   const loadItems = async (prefix: string) => {
     setLoading(true);
@@ -37,9 +39,10 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
     }
   };
 
+  // Reload when retry count changes
   useEffect(() => {
     loadItems(currentPrefix);
-  }, [currentPrefix]);
+  }, [currentPrefix, retryCount]);
 
   const navigateToFolder = (key: string) => {
     setPrefixHistory(prev => [...prev, currentPrefix]);
@@ -55,7 +58,7 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
   };
 
   const handleRefresh = () => {
-    loadItems(currentPrefix);
+    setRetryCount(prev => prev + 1);
   };
 
   const handleItemClick = (item: S3Item) => {
@@ -103,6 +106,30 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
 
   const handleFolderCreated = () => {
     loadItems(currentPrefix);
+  };
+
+  // Render loading skeletons
+  const renderLoadingSkeletons = () => {
+    return (
+      <div className={viewMode === 'grid' 
+        ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+        : "space-y-2"}>
+        {Array(8).fill(0).map((_, i) => (
+          viewMode === 'grid' ? (
+            <div key={i}>
+              <Skeleton className="h-[150px] w-full mb-2" />
+              <Skeleton className="h-4 w-4/5 mb-1" />
+              <Skeleton className="h-3 w-1/3" />
+            </div>
+          ) : (
+            <div key={i} className="flex items-center space-x-2">
+              <Skeleton className="h-8 w-8 rounded-full" />
+              <Skeleton className="h-6 w-full max-w-md" />
+            </div>
+          )
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -160,12 +187,7 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
       )}
 
       {loading ? (
-        <div className="h-64 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-upload-blue mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading files...</p>
-          </div>
-        </div>
+        renderLoadingSkeletons()
       ) : error ? (
         <div className="h-64 flex items-center justify-center">
           <div className="text-center text-red-500">
@@ -190,6 +212,13 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ onSelect, showHeader = true }
               </svg>
             </div>
             <p>No files found in this folder</p>
+            <Button 
+              variant="outline" 
+              className="mt-4" 
+              onClick={handleRefresh}
+            >
+              <RefreshCcw className="h-4 w-4 mr-2" /> Refresh
+            </Button>
           </div>
         </div>
       ) : viewMode === 'grid' ? (
