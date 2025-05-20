@@ -6,7 +6,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: "./", // This ensures assets are loaded correctly when deployed
+  base: "", // Change from "./" to "" for better path resolution
   server: {
     host: "::",
     port: 8080,
@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     // Ensure proper handling of assets
     assetsDir: "assets",
-    sourcemap: false,
+    sourcemap: mode === 'development', // Only generate sourcemaps in development
     outDir: "dist",
     rollupOptions: {
       output: {
