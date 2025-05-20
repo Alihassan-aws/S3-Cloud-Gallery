@@ -15,7 +15,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { listS3Folders, uploadFilesToS3 } from '@/services/s3Service';
-import { cn } from '@/lib/utils'; // Import cn utility for className merging
 
 // Configure AWS
 const configureAWS = () => {
@@ -33,24 +32,18 @@ const s3 = new AWS.S3();
 interface FileUploaderProps {
   onUploadComplete?: (fileUrl: string | string[]) => void;
   currentPrefix?: string;
-  multiple?: boolean;
-  className?: string; // Added className property to the interface
+  multiple?: boolean; // Added the multiple property
 }
 
-const FileUploader: React.FC<FileUploaderProps> = ({ 
-  onUploadComplete, 
-  currentPrefix = '', 
-  multiple = false,
-  className
-}) => {
+const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete, currentPrefix = '', multiple = false }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [progress, setProgress] = useState<number>(0);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [uploadComplete, setUploadComplete] = useState<boolean>(false);
   const [multipleFiles, setMultipleFiles] = useState<boolean>(multiple);
-  const [availableFolders, setAvailableFolders] = useState<string[]>(['root']);
-  const [selectedFolder, setSelectedFolder] = useState<string>('root');
+  const [availableFolders, setAvailableFolders] = useState<string[]>(['root']); // Changed initial empty string to 'root'
+  const [selectedFolder, setSelectedFolder] = useState<string>('root'); // Changed initial value to 'root'
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize multipleFiles state from props
@@ -201,7 +194,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   };
 
   return (
-    <div className={cn("w-full max-w-xl mx-auto", className)}> {/* Use cn to merge classNames */}
+    <div className="w-full max-w-xl mx-auto">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
           <Switch 
