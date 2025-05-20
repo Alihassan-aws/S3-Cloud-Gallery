@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import AWS from 'aws-sdk';
 import { toast } from '@/components/ui/sonner';
@@ -7,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Upload, File, Check, X, Folder } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { cn } from '@/lib/utils';
 import {
   Select,
   SelectContent,
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { listS3Folders, uploadFilesToS3 } from '@/services/s3Service';
 
-// Configure AWS
+// Configure AWS only when needed
 const configureAWS = () => {
   AWS.config.update({
     accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
@@ -32,18 +32,24 @@ const s3 = new AWS.S3();
 interface FileUploaderProps {
   onUploadComplete?: (fileUrl: string | string[]) => void;
   currentPrefix?: string;
-  multiple?: boolean; // Added the multiple property
+  multiple?: boolean;
+  className?: string; // Add className prop
 }
 
-const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete, currentPrefix = '', multiple = false }) => {
+const FileUploader: React.FC<FileUploaderProps> = ({ 
+  onUploadComplete, 
+  currentPrefix = '', 
+  multiple = false,
+  className // Add className to destructuring
+}) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [progress, setProgress] = useState<number>(0);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [uploadComplete, setUploadComplete] = useState<boolean>(false);
   const [multipleFiles, setMultipleFiles] = useState<boolean>(multiple);
-  const [availableFolders, setAvailableFolders] = useState<string[]>(['root']); // Changed initial empty string to 'root'
-  const [selectedFolder, setSelectedFolder] = useState<string>('root'); // Changed initial value to 'root'
+  const [availableFolders, setAvailableFolders] = useState<string[]>(['root']); 
+  const [selectedFolder, setSelectedFolder] = useState<string>('root'); 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize multipleFiles state from props
@@ -194,7 +200,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete, currentPr
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto">
+    <div className={cn("w-full max-w-xl mx-auto", className)}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
           <Switch 
