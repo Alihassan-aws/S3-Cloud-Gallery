@@ -21,8 +21,6 @@ import {
   Share,
   Heart,
   UserCircle,
-  Check,
-  Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -64,10 +62,6 @@ const Index = () => {
             <div>
               <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
                 <span className="text-gradient">Cloud Gallery</span>
-                <span className="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs px-2 py-0.5 rounded-full flex items-center">
-                  <Sparkles className="h-3 w-3 mr-1" />
-                  Premium
-                </span>
               </h1>
               <p className="text-xs text-muted-foreground">Created by Ali Hassan</p>
             </div>
@@ -95,13 +89,13 @@ const Index = () => {
       </header>
       
       <main className="max-w-7xl mx-auto p-4 sm:p-6 space-y-8">
-        {/* Highlight card with upload stats */}
+        {/* Upload stats card */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="glass overflow-hidden border-white/20 dark:border-gray-800/30 col-span-2">
             <CardHeader className="pb-2">
-              <CardTitle className="text-gradient">Welcome to Cloud Gallery</CardTitle>
+              <CardTitle className="text-gradient">Storage Overview</CardTitle>
               <CardDescription>
-                The premium cloud storage solution with enhanced viewing experience
+                Your cloud storage statistics
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -184,7 +178,7 @@ const Index = () => {
             <Card className="glass border-white/20 dark:border-gray-800/30 shadow-xl">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Upload className="h-5 w-5 text-upload-blue" />
+                  <Upload className="h-5 w-5 text-primary" />
                   Upload Files
                 </CardTitle>
                 <CardDescription>
@@ -195,7 +189,7 @@ const Index = () => {
                 <FileUploader 
                   onUploadComplete={handleUploadComplete} 
                   currentPrefix={currentPrefix}
-                  multiple={true} // Enable multiple file upload
+                  multiple={true}
                   className="min-h-[300px]"
                 />
 
@@ -212,7 +206,7 @@ const Index = () => {
                   
                   <div className="flex flex-col items-center p-4 glass rounded-xl">
                     <div className="bg-primary/10 p-3 rounded-full mb-3">
-                      <Check className="h-6 w-6 text-primary" />
+                      <CloudIcon className="h-6 w-6 text-primary" />
                     </div>
                     <h3 className="font-medium">Organize Files</h3>
                     <p className="text-sm text-center text-muted-foreground">
@@ -226,7 +220,7 @@ const Index = () => {
                     </div>
                     <h3 className="font-medium">Secure Sharing</h3>
                     <p className="text-sm text-center text-muted-foreground">
-                      Share files with friends securely with premium features
+                      Share files with friends securely
                     </p>
                   </div>
                 </div>
@@ -247,7 +241,7 @@ const Index = () => {
                   href={uploadedFileUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-upload-blue hover:underline break-all"
+                  className="text-primary hover:underline break-all"
                 >
                   {uploadedFileUrl}
                 </a>
@@ -261,7 +255,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center gap-2 mb-4 md:mb-0">
             <CloudIcon className="h-5 w-5 text-primary" />
-            <span className="text-sm font-medium">Cloud Gallery Premium</span>
+            <span className="text-sm font-medium">Cloud Gallery</span>
           </div>
           <div className="text-sm text-muted-foreground">
             © 2025 Cloud Gallery. All rights reserved.
