@@ -1,19 +1,16 @@
 
 import './utils/awsPolyfill';
-import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-// Ensure the DOM is fully loaded before rendering
-const rootElement = document.getElementById("root");
+// Wait for DOM to be fully loaded before rendering
+document.addEventListener('DOMContentLoaded', () => {
+  const rootElement = document.getElementById("root");
   
-if (rootElement) {
-  createRoot(rootElement).render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
-} else {
-  console.error("Root element not found!");
-}
+  if (rootElement) {
+    createRoot(rootElement).render(<App />);
+  } else {
+    console.error("Root element not found!");
+  }
+});

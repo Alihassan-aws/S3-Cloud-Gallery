@@ -9,6 +9,7 @@ import { Image, Upload, CloudIcon } from 'lucide-react';
 
 const Index = () => {
   const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
+  const [currentPrefix, setCurrentPrefix] = useState<string>('');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const handleUploadComplete = (fileUrl: string | string[]) => {
@@ -23,6 +24,16 @@ const Index = () => {
     }
   };
 
+  const handleFileSelect = (fileUrl: string) => {
+    console.log('Selected file:', fileUrl);
+    // You can use this later if needed
+    setUploadedFileUrl(fileUrl);
+  };
+
+  const handlePrefixChange = (prefix: string) => {
+    setCurrentPrefix(prefix);
+  };
+
   return (
     <div className="min-h-screen bg-background transition-all duration-300 ease-in-out">
       <header className="border-b py-4 px-6 bg-card/50 backdrop-blur-sm sticky top-0 z-10">
@@ -32,6 +43,7 @@ const Index = () => {
               <CloudIcon className="h-6 w-6 text-upload-blue animate-pulse" />
               <span className="bg-gradient-to-r from-upload-blue to-purple-500 bg-clip-text text-transparent">Cloud Gallery</span>
             </h1>
+            <p className="text-xs text-muted-foreground">Created by Ali Hassan</p>
           </div>
           <ThemeToggle />
         </div>
@@ -63,7 +75,7 @@ const Index = () => {
               </CardHeader>
               <CardContent>
                 <FileBrowser 
-                  onSelect={handleUploadComplete} 
+                  onSelect={handleFileSelect} 
                   key={`browser-${refreshTrigger}`} // Force refresh when uploads happen
                 />
               </CardContent>
@@ -84,6 +96,7 @@ const Index = () => {
               <CardContent>
                 <FileUploader 
                   onUploadComplete={handleUploadComplete} 
+                  currentPrefix={currentPrefix}
                   multiple={true} // Enable multiple file upload
                 />
               </CardContent>

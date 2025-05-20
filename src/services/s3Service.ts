@@ -1,23 +1,13 @@
+
 import AWS from 'aws-sdk';
 import { toast } from '@/components/ui/sonner';
 
 // Configure AWS
 const configureAWS = () => {
-  const accessKeyId = import.meta.env.VITE_AWS_ACCESS_KEY_ID;
-  const secretAccessKey = import.meta.env.VITE_AWS_SECRET_ACCESS_KEY;
-  const region = import.meta.env.VITE_AWS_REGION;
-
-  // Check if credentials are available and log appropriate messages (without exposing values)
-  if (!accessKeyId || !secretAccessKey || !region) {
-    console.error("AWS credentials or region not found in environment variables");
-  } else {
-    console.log("AWS configuration initialized with region:", region);
-  }
-
   AWS.config.update({
-    accessKeyId,
-    secretAccessKey,
-    region,
+    accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
+    secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
+    region: import.meta.env.VITE_AWS_REGION,
   });
 };
 
@@ -149,6 +139,7 @@ export async function createS3Folder(folderName: string, currentPrefix = ''): Pr
   }
 }
 
+// Get all available folders for selection during upload
 export async function listS3Folders(): Promise<string[]> {
   try {
     const params = {
@@ -176,6 +167,7 @@ export async function listS3Folders(): Promise<string[]> {
   }
 }
 
+// Upload multiple files to S3
 export async function uploadFilesToS3(
   files: File[], 
   destinationFolder: string = '', 
