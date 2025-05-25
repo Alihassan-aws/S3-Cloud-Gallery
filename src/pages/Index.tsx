@@ -39,11 +39,11 @@ const Index = () => {
       <header className="border-b py-4 px-6 bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+            <h1 className="text-4xl font-bold text-foreground flex items-center gap-2">
               <CloudIcon className="h-6 w-6 text-upload-blue animate-pulse" />
               <span className="bg-gradient-to-r from-upload-blue to-purple-500 bg-clip-text text-transparent">Cloud Gallery</span>
             </h1>
-            <p className="text-xs text-muted-foreground">Created by Ali Hassan</p>
+            <p className="text-sm font-bold text-muted-foreground">Created by Ali Hassan</p>
           </div>
           <ThemeToggle />
         </div>
@@ -67,7 +67,7 @@ const Index = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Image className="h-5 w-5 text-upload-blue" />
-                  Browse Files
+                  Browse Gallery
                 </CardTitle>
                 <CardDescription>
                   View and manage your files in the cloud storage
@@ -103,27 +103,6 @@ const Index = () => {
             </Card>
           </TabsContent>
         </Tabs>
-
-        {uploadedFileUrl && (
-          <Card className="mt-6 bg-muted/50 border border-border/40 shadow-md animate-fade-in">
-            <CardHeader>
-              <CardTitle>Upload Successful</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="mb-2 text-sm font-medium">File URL:</p>
-              <div className="bg-card p-3 rounded-md border overflow-auto">
-                <a 
-                  href={uploadedFileUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-upload-blue hover:underline break-all"
-                >
-                  {uploadedFileUrl}
-                </a>
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </main>
     </div>
   );

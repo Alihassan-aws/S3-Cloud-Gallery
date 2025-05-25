@@ -4,24 +4,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>S3 File Uploader</title>
-    <meta name="description" content="Simple S3 file uploader" />
+    <title>Cloud Gallery</title>
+    <meta name="description" content="Cloud Gallery" />
     <meta name="author" content="Lovable" />
 
-    <meta property="og:title" content="S3 File Uploader" />
-    <meta property="og:description" content="Simple S3 file uploader" />
+    <meta property="og:title" content="Cloud Gallery" />
+    <meta property="og:description" content="Cloud Gallery" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    
+    <!-- Remove base tag as it can conflict with relative paths -->
   </head>
 
   <body>
     <div id="root"></div>
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="./src/main.tsx"></script>
+    <script src="/assets/some.js"></script>
   </body>
 </html>

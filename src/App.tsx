@@ -8,6 +8,8 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
+
+
 // Configure QueryClient with better error handling
 const queryClient = new QueryClient({
   defaultOptions: {

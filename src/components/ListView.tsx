@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { S3Item, getS3FileUrl } from '@/services/s3Service';
 import {
@@ -27,23 +26,24 @@ interface ListViewProps {
   onDownload: (item: S3Item) => void;
 }
 
-const ListView: React.FC<ListViewProps> = ({ items, onItemClick, onDeleteItem, onDownload }) => {
-  const getItemName = (key: string) => {
-    return key.split('/').filter(Boolean).pop() || key;
-  };
+const ListView: React.FC<ListViewProps> = ({
+  items,
+  onItemClick,
+  onDeleteItem,
+  onDownload
+}) => {
+  const getItemName = (key: string) =>
+    key.split('/').filter(Boolean).pop() || key;
 
   const formatFileSize = (size?: number) => {
     if (size === undefined) return '';
-    
     const units = ['B', 'KB', 'MB', 'GB', 'TB'];
     let formattedSize = size;
     let unitIndex = 0;
-    
     while (formattedSize >= 1024 && unitIndex < units.length - 1) {
       formattedSize /= 1024;
       unitIndex++;
     }
-    
     return `${formattedSize.toFixed(1)} ${units[unitIndex]}`;
   };
 
@@ -52,37 +52,39 @@ const ListView: React.FC<ListViewProps> = ({ items, onItemClick, onDeleteItem, o
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[300px]">Name</TableHead>
-            <TableHead>Size</TableHead>
-            <TableHead>Modified</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="w-[260px]">Name</TableHead>
+            <TableHead className="w-[100px]">Size</TableHead>
+            <TableHead className="w-[160px]">Modified</TableHead>
+            <TableHead className="text-right w-[80px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {items.map((item) => (
-            <TableRow 
-              key={item.Key} 
-              className="cursor-pointer hover:bg-accent/50" 
+            <TableRow
+              key={item.Key}
+              className="cursor-pointer hover:bg-muted/50 transition-colors"
               onClick={() => onItemClick(item)}
             >
               <TableCell className="font-medium flex items-center gap-2">
-                <FileIcon fileName={item.Key} isFolder={item.isFolder} />
-                <span className="truncate max-w-[250px]">{getItemName(item.Key)}</span>
+                <FileIcon fileName={item.Key} isFolder={item.isFolder} className="h-4 w-4" />
+                <span className="truncate max-w-[200px]">{getItemName(item.Key)}</span>
               </TableCell>
-              <TableCell>{item.isFolder ? '—' : formatFileSize(item.Size)}</TableCell>
-              <TableCell>
-                {item.LastModified 
-                  ? formatDistanceToNow(new Date(item.LastModified), { addSuffix: true }) 
+              <TableCell className="text-sm text-muted-foreground">
+                {item.isFolder ? '—' : formatFileSize(item.Size)}
+              </TableCell>
+              <TableCell className="text-sm text-muted-foreground">
+                {item.LastModified
+                  ? formatDistanceToNow(new Date(item.LastModified), { addSuffix: true })
                   : '—'}
               </TableCell>
               <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
+                    <Button variant="ghost" size="icon" className="h-6 w-6">
                       <MoreVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent>
+                  <DropdownMenuContent align="end">
                     {!item.isFolder && (
                       <>
                         <DropdownMenuItem onClick={() => window.open(getS3FileUrl(item.Key), '_blank')}>
@@ -93,7 +95,7 @@ const ListView: React.FC<ListViewProps> = ({ items, onItemClick, onDeleteItem, o
                         </DropdownMenuItem>
                       </>
                     )}
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       onClick={() => onDeleteItem(item)}
                       className="text-red-600 focus:text-red-600"
                     >

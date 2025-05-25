@@ -1,9 +1,5 @@
 
-# S3 Cloud Gallery
-
-
-![s3cloudgallery](https://github.com/user-attachments/assets/6f43bd1d-cb8f-4424-94a7-298a8483664e)
-
+# S3 File Uploader
 
 A simple React application for uploading files to Amazon S3 buckets.
 

@@ -1,20 +1,17 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: "", // Change from "./" to "" for better path resolution
+  base: "./", // ✅ Required for static builds (fixes blank screen issue)
   server: {
     host: "::",
     port: 8080,
   },
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(),
+    mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -22,9 +19,8 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    // Ensure proper handling of assets
     assetsDir: "assets",
-    sourcemap: mode === 'development', // Only generate sourcemaps in development
+    sourcemap: false,
     outDir: "dist",
     rollupOptions: {
       output: {
