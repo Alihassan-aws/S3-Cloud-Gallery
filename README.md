@@ -1,6 +1,9 @@
 
 # S3 File Uploader
 
+![Screenshot 2025-05-26 041122](https://github.com/user-attachments/assets/02af2108-81bd-42c1-835c-b31e011d0e89)
+
+
 A simple React application for uploading files to Amazon S3 buckets.
 
 ## Features
