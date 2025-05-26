@@ -8,7 +8,7 @@ A simple React application for uploading files to Amazon S3 buckets.
 
 ## Features
 
-- Drag and drop file uploads
+- File uploads
 - Visual upload progress indicator
 - Success/error notifications
 - Responsive design
