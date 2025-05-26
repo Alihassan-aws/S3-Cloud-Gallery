@@ -4,7 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
-  base: "./", // ✅ Required for static builds (fixes blank screen issue)
+  base: "./",
   server: {
     host: "::",
     port: 8080,
